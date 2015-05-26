@@ -17,6 +17,7 @@ namespace JobTimer
         public delegate bool MethodCaller();
         Thread _sendMsgThread;
         Thread _getUserInfo;
+        System.Media.SoundPlayer sPlay = new System.Media.SoundPlayer();
 
         private void btnStartMsg_Click(object sender, EventArgs e)
         {
@@ -32,10 +33,25 @@ namespace JobTimer
 
         private void btnStartScan_Click(object sender, EventArgs e)
         {
-            _getUserInfo = new Thread(new ThreadStart(IsAvailable));
-            _getUserInfo.Start();
             btnStartScan.Enabled = false;
             btnStopScan.Enabled = true;
+
+            MethodCaller mc = new MethodCaller(IsAvailable);
+            IAsyncResult result = mc.BeginInvoke(null, null);
+            bool isAvailable = mc.EndInvoke(result);
+            if (isAvailable)
+            {
+                sPlay.SoundLocation = System.AppDomain.CurrentDomain.BaseDirectory + "邓紫棋 - 喜欢你.wav";
+                sPlay.Load();
+                sPlay.Play();
+                var msg = MessageBox.Show("Appointment Is Available!");
+                if (DialogResult.OK == msg)
+                {
+                    sPlay.Stop();
+                    btnStartScan.Enabled = true;
+                    btnStopScan.Enabled = false;
+                }
+            }
         }
 
         private void btnStopScan_Click(object sender, EventArgs e)
@@ -92,20 +108,19 @@ namespace JobTimer
             Application.Exit();
         }
 
-        public void IsAvailable()
+        public bool IsAvailable()
         {
-            while (true)
+            var result = false;
+            while (!result)
             {
                 var response = GetResponse("http://117.36.53.122:9088/jsrwsyy/wsyy.do", "http://117.36.53.122:9088/jsrwsyy/wsyy.do?actiontype=gryy_gg&kskm=1");
-                if (!string.IsNullOrEmpty(response) && !response.Contains("alert(\"抱歉，该科目各考场两天后的科目考试安排预约人数已满，不能进行预约！\");"))
+                if (!string.IsNullOrEmpty(response) && response.Contains("alert(\"抱歉，该科目各考场两天后的科目考试安排预约人数已满，不能进行预约！\");"))
                 {
-                    MessageBox.Show("Appointment Is Available!");
-                    _getUserInfo.Abort();
-                    btnStartScan.Enabled = true;
-                    btnStopScan.Enabled = false;
+                    result = true;
                 }
                 Thread.Sleep(10000);
             }
+            return result;
         }
 
         private string GetResponse(string url, string refererUrl)
