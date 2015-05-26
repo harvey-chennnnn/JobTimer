@@ -101,10 +101,10 @@ namespace JobTimer
 
         public void IsAvailable()
         {
-            while (Visible)
+            while (true)
             {
                 var response = GetResponse("http://117.36.53.122:9088/jsrwsyy/wsyy.do", "chbox=on&mac=74%3A2F%3A68%3AE4%3A71%3AF7&actiontype=gryyks&kskm=1", "http://117.36.53.122:9088/jsrwsyy/wsyy.do?actiontype=gryy_gg&kskm=1");
-                if (!string.IsNullOrEmpty(response) && response.Contains("alert(\"抱歉，该科目各考场两天后的科目考试安排预约人数已满，不能进行预约！\");"))
+                if (!string.IsNullOrEmpty(response) && !response.Contains("alert(\"抱歉，该科目各考场两天后的科目考试安排预约人数已满，不能进行预约！\");"))
                 {
                     //sPlay.SoundLocation = System.AppDomain.CurrentDomain.BaseDirectory + "邓紫棋 - 喜欢你.wav";
                     //sPlay.Load();
