@@ -40,12 +40,16 @@
             this.ShowMainWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.Exits = new System.Windows.Forms.ToolStripMenuItem();
             this.btnStartMsg = new System.Windows.Forms.Button();
+            this.sub1 = new System.Windows.Forms.CheckBox();
+            this.sub2 = new System.Windows.Forms.CheckBox();
+            this.sub3 = new System.Windows.Forms.CheckBox();
+            this.sub4 = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnStopMsg
             // 
-            this.btnStopMsg.Location = new System.Drawing.Point(152, 63);
+            this.btnStopMsg.Location = new System.Drawing.Point(153, 102);
             this.btnStopMsg.Name = "btnStopMsg";
             this.btnStopMsg.Size = new System.Drawing.Size(91, 23);
             this.btnStopMsg.TabIndex = 1;
@@ -55,7 +59,7 @@
             // 
             // btnStartScan
             // 
-            this.btnStartScan.Location = new System.Drawing.Point(34, 152);
+            this.btnStartScan.Location = new System.Drawing.Point(35, 191);
             this.btnStartScan.Name = "btnStartScan";
             this.btnStartScan.Size = new System.Drawing.Size(88, 23);
             this.btnStartScan.TabIndex = 2;
@@ -65,7 +69,7 @@
             // 
             // btnStopScan
             // 
-            this.btnStopScan.Location = new System.Drawing.Point(152, 152);
+            this.btnStopScan.Location = new System.Drawing.Point(153, 191);
             this.btnStopScan.Name = "btnStopScan";
             this.btnStopScan.Size = new System.Drawing.Size(91, 23);
             this.btnStopScan.TabIndex = 3;
@@ -76,7 +80,7 @@
             // dateTimePicker1
             // 
             this.dateTimePicker1.CustomFormat = "";
-            this.dateTimePicker1.Location = new System.Drawing.Point(152, 30);
+            this.dateTimePicker1.Location = new System.Drawing.Point(153, 69);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(91, 20);
             this.dateTimePicker1.TabIndex = 4;
@@ -84,7 +88,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(48, 30);
+            this.label1.Location = new System.Drawing.Point(49, 69);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(58, 13);
             this.label1.TabIndex = 5;
@@ -123,7 +127,7 @@
             // btnStartMsg
             // 
             this.btnStartMsg.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnStartMsg.Location = new System.Drawing.Point(34, 63);
+            this.btnStartMsg.Location = new System.Drawing.Point(35, 102);
             this.btnStartMsg.Name = "btnStartMsg";
             this.btnStartMsg.Size = new System.Drawing.Size(88, 23);
             this.btnStartMsg.TabIndex = 0;
@@ -131,11 +135,59 @@
             this.btnStartMsg.UseVisualStyleBackColor = true;
             this.btnStartMsg.Click += new System.EventHandler(this.btnStartMsg_Click);
             // 
+            // sub1
+            // 
+            this.sub1.AutoSize = true;
+            this.sub1.Checked = true;
+            this.sub1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.sub1.Location = new System.Drawing.Point(35, 25);
+            this.sub1.Name = "sub1";
+            this.sub1.Size = new System.Drawing.Size(51, 17);
+            this.sub1.TabIndex = 6;
+            this.sub1.Text = "Sub1";
+            this.sub1.UseVisualStyleBackColor = true;
+            // 
+            // sub2
+            // 
+            this.sub2.AutoSize = true;
+            this.sub2.Checked = true;
+            this.sub2.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.sub2.Location = new System.Drawing.Point(92, 25);
+            this.sub2.Name = "sub2";
+            this.sub2.Size = new System.Drawing.Size(51, 17);
+            this.sub2.TabIndex = 6;
+            this.sub2.Text = "Sub2";
+            this.sub2.UseVisualStyleBackColor = true;
+            // 
+            // sub3
+            // 
+            this.sub3.AutoSize = true;
+            this.sub3.Location = new System.Drawing.Point(149, 25);
+            this.sub3.Name = "sub3";
+            this.sub3.Size = new System.Drawing.Size(51, 17);
+            this.sub3.TabIndex = 6;
+            this.sub3.Text = "Sub3";
+            this.sub3.UseVisualStyleBackColor = true;
+            // 
+            // sub4
+            // 
+            this.sub4.AutoSize = true;
+            this.sub4.Location = new System.Drawing.Point(206, 25);
+            this.sub4.Name = "sub4";
+            this.sub4.Size = new System.Drawing.Size(51, 17);
+            this.sub4.TabIndex = 6;
+            this.sub4.Text = "Sub4";
+            this.sub4.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Controls.Add(this.sub4);
+            this.Controls.Add(this.sub3);
+            this.Controls.Add(this.sub2);
+            this.Controls.Add(this.sub1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dateTimePicker1);
             this.Controls.Add(this.btnStopScan);
@@ -166,6 +218,10 @@
         private System.Windows.Forms.ToolStripMenuItem ShowMainWindow;
         private System.Windows.Forms.ToolStripMenuItem Exits;
         private System.Windows.Forms.Button btnStartMsg;
+        private System.Windows.Forms.CheckBox sub1;
+        private System.Windows.Forms.CheckBox sub2;
+        private System.Windows.Forms.CheckBox sub3;
+        private System.Windows.Forms.CheckBox sub4;
     }
 }
 

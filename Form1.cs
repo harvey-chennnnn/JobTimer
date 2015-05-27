@@ -96,26 +96,45 @@ namespace JobTimer
             notifyIcon1.Visible = false;
             Close();
             Dispose();
-            System.Environment.Exit(0);  
+            System.Environment.Exit(0);
         }
 
+        public void CheckData(int sub)
+        {
+            var response = GetResponse("http://117.36.53.122:9088/jsrwsyy/wsyy.do", "chbox=on&mac=74%3A2F%3A68%3AE4%3A71%3AF7&actiontype=gryyks&kskm=" + sub, "http://117.36.53.122:9088/jsrwsyy/wsyy.do?actiontype=gryy_gg&kskm=" + sub);
+            if (!string.IsNullOrEmpty(response) && !response.Contains("alert(\"抱歉，该科目各考场两天后的科目考试安排预约人数已满，不能进行预约！\");"))
+            {
+                //sPlay.SoundLocation = System.AppDomain.CurrentDomain.BaseDirectory + "邓紫棋 - 喜欢你.wav";
+                //sPlay.Load();
+                //sPlay.Play();
+                notifyIcon1.ShowBalloonTip(3000, "", "Examine Subject " + sub + " Is Available at:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), ToolTipIcon.Info);
+                var fs = new FileStream(System.AppDomain.CurrentDomain.BaseDirectory + "Logs\\Examine_Subject_" + sub + "_" + DateTime.Now.Ticks + ".txt", FileMode.Create, FileAccess.Write);
+                var sw = new StreamWriter(fs);
+                sw.WriteLine("Examine Subject " + sub + " Is Available at:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                var appointmentData = GetResponse("http://117.36.53.122:9088/jsrwsyy/wsyy.do?actiontype=init", "", "");
+                sw.Write(appointmentData);
+                sw.Close();
+            }
+        }
         public void IsAvailable()
         {
             while (true)
             {
-                var response = GetResponse("http://117.36.53.122:9088/jsrwsyy/wsyy.do", "chbox=on&mac=74%3A2F%3A68%3AE4%3A71%3AF7&actiontype=gryyks&kskm=1", "http://117.36.53.122:9088/jsrwsyy/wsyy.do?actiontype=gryy_gg&kskm=1");
-                if (!string.IsNullOrEmpty(response) && !response.Contains("alert(\"抱歉，该科目各考场两天后的科目考试安排预约人数已满，不能进行预约！\");"))
+                if (sub1.Checked)
                 {
-                    //sPlay.SoundLocation = System.AppDomain.CurrentDomain.BaseDirectory + "邓紫棋 - 喜欢你.wav";
-                    //sPlay.Load();
-                    //sPlay.Play();
-                    notifyIcon1.ShowBalloonTip(3000, "", "Appointment Is Available at:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), ToolTipIcon.Info);
-                    var fs = new FileStream(System.AppDomain.CurrentDomain.BaseDirectory + "Logs\\" + DateTime.Now.Ticks + ".txt", FileMode.Create, FileAccess.Write);
-                    var sw = new StreamWriter(fs);
-                    sw.WriteLine("Appointment Is Available at:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                    var appointmentData = GetResponse("http://117.36.53.122:9088/jsrwsyy/wsyy.do?actiontype=init", "", "");
-                    sw.Write(appointmentData);
-                    sw.Close();
+                    CheckData(1);
+                }
+                if (sub2.Checked)
+                {
+                    CheckData(2);
+                }
+                if (sub3.Checked)
+                {
+                    CheckData(3);
+                }
+                if (sub4.Checked)
+                {
+                    CheckData(4);
                 }
                 Thread.Sleep(10000);
             }
@@ -123,22 +142,30 @@ namespace JobTimer
 
         private string GetResponse(string url, string postData, string refererUrl)
         {
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(url);
-            //webRequest.CookieContainer = this.cookieContainer; //登录时得到的缓存
-            webRequest.Referer = refererUrl;
-            webRequest.Method = "POST";
-            webRequest.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1";
-            webRequest.ContentType = "application/x-www-form-urlencoded";
+            try
+            {
+                HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(url);
+                //webRequest.CookieContainer = this.cookieContainer; //登录时得到的缓存
+                webRequest.Referer = refererUrl;
+                webRequest.Method = "POST";
+                webRequest.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1";
+                webRequest.ContentType = "application/x-www-form-urlencoded";
 
-            byte[] byteArray = Encoding.UTF8.GetBytes(postData); // 转化
-            webRequest.ContentLength = byteArray.Length;
-            Stream requestStream = webRequest.GetRequestStream();
-            requestStream.Write(byteArray, 0, byteArray.Length);    //写入参数    
-            requestStream.Close();
+                byte[] byteArray = Encoding.UTF8.GetBytes(postData); // 转化
+                webRequest.ContentLength = byteArray.Length;
+                Stream requestStream = webRequest.GetRequestStream();
+                requestStream.Write(byteArray, 0, byteArray.Length);    //写入参数    
+                requestStream.Close();
 
-            HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
-            StreamReader reader = new StreamReader(webResponse.GetResponseStream(), Encoding.GetEncoding("GBK"));
-            return reader.ReadToEnd();
+                HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
+                StreamReader reader = new StreamReader(webResponse.GetResponseStream(), Encoding.GetEncoding("GBK"));
+                return reader.ReadToEnd();
+
+            }
+            catch (Exception)
+            {
+                return "";
+            }
         }
 
         protected virtual void OnFormClosing(FormClosingEventArgs e)
