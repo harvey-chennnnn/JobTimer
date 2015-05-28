@@ -19,6 +19,7 @@ namespace JobTimer {
         Thread _getUserInfo;
         System.Media.SoundPlayer sPlay = new System.Media.SoundPlayer();
         private bool IsStop = false;
+        public DateTime notifyDate = DateTime.Now.AddMinutes(5);
 
         private void btnStartScan_Click(object sender, EventArgs e) {
             _getUserInfo = new Thread(new ThreadStart(IsAvailable));
@@ -102,7 +103,12 @@ namespace JobTimer {
                     result = "No Schedules";
                 }
             }
-            labSub1.Text = " Check Data Subject " + sub + " \n\r Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\n\r Result: " + result;
+            result = " Check Subject " + sub + " \n\r Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\n\r Result: " + result;
+            if (DateTime.Now > notifyDate) {
+                notifyDate = DateTime.Now.AddMinutes(5);
+                notifyIcon1.ShowBalloonTip(2000, "", result, ToolTipIcon.Info);
+            }
+            labSub1.Text = result;
         }
         public void IsAvailable() {
             while (true) {
