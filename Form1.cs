@@ -7,13 +7,11 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace JobTimer
-{
-    public partial class Form1 : Form
-    {
-        public Form1()
-        {
+namespace JobTimer {
+    public partial class Form1 : Form {
+        public Form1() {
             InitializeComponent();
+            Control.CheckForIllegalCrossThreadCalls = false;
         }
 
         public delegate bool MethodCaller();
@@ -22,20 +20,7 @@ namespace JobTimer
         System.Media.SoundPlayer sPlay = new System.Media.SoundPlayer();
         private bool IsStop = false;
 
-        private void btnStartMsg_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btnStopMsg_Click(object sender, EventArgs e)
-        {
-            _sendMsgThread.Abort();
-            btnStopMsg.Enabled = false;
-            btnStartMsg.Enabled = true;
-        }
-
-        private void btnStartScan_Click(object sender, EventArgs e)
-        {
+        private void btnStartScan_Click(object sender, EventArgs e) {
             _getUserInfo = new Thread(new ThreadStart(IsAvailable));
             _getUserInfo.IsBackground = true;
             _getUserInfo.Start();
@@ -43,55 +28,45 @@ namespace JobTimer
             btnStopScan.Enabled = true;
         }
 
-        private void btnStopScan_Click(object sender, EventArgs e)
-        {
+        private void btnStopScan_Click(object sender, EventArgs e) {
             IsStop = true;
             _getUserInfo.Abort();
             btnStartScan.Enabled = true;
             btnStopScan.Enabled = false;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
+        private void Form1_Load(object sender, EventArgs e) {
             dateTimePicker1.Format = DateTimePickerFormat.Custom;
             dateTimePicker1.CustomFormat = @"HH:mm:ss";
             dateTimePicker1.ShowUpDown = true;
             notifyIcon1.Visible = false;
-            btnStopMsg.Enabled = false;
             btnStopScan.Enabled = false;
         }
 
-        private void Form1_SizeChanged(object sender, EventArgs e)
-        {
-            if (WindowState == FormWindowState.Minimized)
-            {
+        private void Form1_SizeChanged(object sender, EventArgs e) {
+            if (WindowState == FormWindowState.Minimized) {
                 Hide();
                 notifyIcon1.Visible = true;
             }
         }
 
-        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            if (WindowState == FormWindowState.Minimized)
-            {
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e) {
+            if (WindowState == FormWindowState.Minimized) {
                 Visible = true;
                 WindowState = FormWindowState.Normal;
                 notifyIcon1.Visible = false;
             }
         }
 
-        private void ShowMainWindow_Click(object sender, EventArgs e)
-        {
-            if (WindowState == FormWindowState.Minimized)
-            {
+        private void ShowMainWindow_Click(object sender, EventArgs e) {
+            if (WindowState == FormWindowState.Minimized) {
                 Visible = true;
                 WindowState = FormWindowState.Normal;
                 notifyIcon1.Visible = false;
             }
         }
 
-        private void Exits_Click(object sender, EventArgs e)
-        {
+        private void Exits_Click(object sender, EventArgs e) {
             sPlay.Stop();
             notifyIcon1.Visible = false;
             Close();
@@ -99,58 +74,63 @@ namespace JobTimer
             System.Environment.Exit(0);
         }
 
-        public void CheckData(int sub)
-        {
+        public void CheckData(int sub) {
+            var result = "Network Error or No response";
             var response = GetResponse("http://117.36.53.122:9088/jsrwsyy/wsyy.do", "chbox=on&mac=74%3A2F%3A68%3AE4%3A71%3AF7&actiontype=gryyks&kskm=" + sub, "http://117.36.53.122:9088/jsrwsyy/wsyy.do?actiontype=gryy_gg&kskm=" + sub);
-            if (!string.IsNullOrEmpty(response) && !response.Contains("alert(\"抱歉，该科目各考场两天后的科目考试安排预约人数已满，不能进行预约！\");"))
-            {
-                //sPlay.SoundLocation = System.AppDomain.CurrentDomain.BaseDirectory + "邓紫棋 - 喜欢你.wav";
-                //sPlay.Load();
-                //sPlay.Play();
-                notifyIcon1.ShowBalloonTip(3000, "", "Examine Subject " + sub + " Is Available at:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), ToolTipIcon.Info);
-                var fs = new FileStream(System.AppDomain.CurrentDomain.BaseDirectory + "Logs\\Examine_Subject_" + sub + "_" + DateTime.Now.Ticks + ".txt", FileMode.Create, FileAccess.Write);
-                var sw = new StreamWriter(fs);
-                sw.WriteLine("Examine Subject " + sub + " Is Available at:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                var appointmentData = GetResponse("http://117.36.53.122:9088/jsrwsyy/wsyy.do?actiontype=init", "", "");
-                sw.Write(appointmentData);
-                sw.Close();
+            if (!string.IsNullOrEmpty(response)) {
+                if (!response.Contains("alert(\"抱歉，该科目各考场两天后的科目考试安排预约人数已满，不能进行预约！\");")) {
+                    //sPlay.SoundLocation = System.AppDomain.CurrentDomain.BaseDirectory + "邓紫棋 - 喜欢你.wav";
+                    //sPlay.Load();
+                    //sPlay.Play();
+                    notifyIcon1.ShowBalloonTip(3000, "",
+                        "Examine Subject " + sub + " Is Available at:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                        ToolTipIcon.Info);
+                    var fs =
+                        new FileStream(
+                            System.AppDomain.CurrentDomain.BaseDirectory + "Logs\\Examine_Subject_" + sub + "_" +
+                            DateTime.Now.Ticks + ".txt", FileMode.Create, FileAccess.Write);
+                    var sw = new StreamWriter(fs);
+                    sw.WriteLine("Examine Subject " + sub + " Is Available at:" +
+                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    var appointmentData = GetResponse("http://117.36.53.122:9088/jsrwsyy/wsyy.do?actiontype=init", "",
+                        "");
+                    sw.Write(appointmentData);
+                    sw.Close();
+                    result = "Available";
+                }
+                else {
+                    result = "No Schedules";
+                }
             }
+            labSub1.Text = " Check Data Subject " + sub + " \n\r Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\n\r Result: " + result;
         }
-        public void IsAvailable()
-        {
-            while (true)
-            {
-                if (sub1.Checked)
-                {
+        public void IsAvailable() {
+            while (true) {
+                if (sub1.Checked) {
                     CheckData(1);
                 }
-                if (sub2.Checked)
-                {
+                if (sub2.Checked) {
                     CheckData(2);
                 }
-                if (sub3.Checked)
-                {
+                if (sub3.Checked) {
                     CheckData(3);
                 }
-                if (sub4.Checked)
-                {
+                if (sub4.Checked) {
                     CheckData(4);
                 }
                 Thread.Sleep(10000);
             }
         }
 
-        private string GetResponse(string url, string postData, string refererUrl)
-        {
-            try
-            {
+        private string GetResponse(string url, string postData, string refererUrl) {
+            try {
                 HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(url);
                 //webRequest.CookieContainer = this.cookieContainer; //登录时得到的缓存
                 webRequest.Referer = refererUrl;
                 webRequest.Method = "POST";
                 webRequest.UserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1";
                 webRequest.ContentType = "application/x-www-form-urlencoded";
-
+                webRequest.Timeout = 10000;
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData); // 转化
                 webRequest.ContentLength = byteArray.Length;
                 Stream requestStream = webRequest.GetRequestStream();
@@ -162,14 +142,12 @@ namespace JobTimer
                 return reader.ReadToEnd();
 
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 return "";
             }
         }
 
-        protected virtual void OnFormClosing(FormClosingEventArgs e)
-        {
+        protected virtual void OnFormClosing(FormClosingEventArgs e) {
             base.OnFormClosing(e);
         }
     }
