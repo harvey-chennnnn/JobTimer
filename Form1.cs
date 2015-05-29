@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -77,7 +78,7 @@ namespace JobTimer {
 
         public void CheckData(int sub) {
             var result = "Network Error or No response";
-            var response = GetResponse("http://117.36.53.122:9088/jsrwsyy/wsyy.do", "chbox=on&mac=74%3A2F%3A68%3AE4%3A71%3AF7&actiontype=gryyks&kskm=" + sub, "http://117.36.53.122:9088/jsrwsyy/wsyy.do?actiontype=gryy_gg&kskm=" + sub);
+            var response = GetResponse("http://117.36.53.122:9088/jsrwsyy/wsyy.do", "chbox=on&mac=" + System.Web.HttpUtility.UrlEncode(GetNewMac()) + "&actiontype=gryyks&kskm=" + sub, "http://117.36.53.122:9088/jsrwsyy/wsyy.do?actiontype=gryy_gg&kskm=" + sub);
             if (!string.IsNullOrEmpty(response)) {
                 if (!response.Contains("alert(\"抱歉，该科目各考场两天后的科目考试安排预约人数已满，不能进行预约！\");")) {
                     //sPlay.SoundLocation = System.AppDomain.CurrentDomain.BaseDirectory + "邓紫棋 - 喜欢你.wav";
@@ -151,6 +152,39 @@ namespace JobTimer {
             catch (Exception) {
                 return "";
             }
+        }
+
+        Random r = new Random();
+        /// <summary>
+        /// 生成随机MAC地址
+        /// </summary>
+        /// <param name="macAddress">随意传递一个MAC</param>
+        /// <returns></returns>
+        public string GetNewMac() {
+            string result = string.Empty;
+            string[] mac = "EC:F4:BB:19:01:52".Split(':');
+
+            for (int i = 0; i < mac.Length; i++) {
+
+                short item = short.Parse(r.Next(0, 256).ToString(), System.Globalization.NumberStyles.HexNumber);
+                short itemNext = short.Parse(r.Next(0, 256).ToString(), System.Globalization.NumberStyles.HexNumber);
+                if (item == 0) {
+                    item &= itemNext;
+                }
+                else {
+                    item ^= itemNext;// (short)(itemNext >> 1);
+                }
+                mac[i] = item.ToString("x8").Substring(6, 2);
+            }
+            for (int i = 0; i < mac.Length; i++) {
+                if (i == mac.Length - 1) {
+                    result += mac[i];
+                    continue;
+                }
+                result += mac[i];
+                result += ":";
+            }
+            return result.ToUpper();
         }
 
         protected virtual void OnFormClosing(FormClosingEventArgs e) {
